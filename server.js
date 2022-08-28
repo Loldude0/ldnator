@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 client.commands = new Collection();
 
@@ -22,6 +22,7 @@ inConversation = [];
 
 client.once('ready', () => {
     console.log('running');
+    client.user.setActivity('PING ME AND SAY HELP!', { type: ActivityType.Playing });
 });
 
 client.on('messageCreate', async (message) => {
@@ -52,4 +53,24 @@ client.on('messageCreate', async (message) => {
         }
     }
 });
+
+client.on('guildCreate', (guild) => {
+    console.log("got invited to " + guild.name);
+    let channel;
+    guild.channels.cache.forEach((channel) => {
+        if(
+            channel.type == "text" &&
+            channel.permissionsFor(guild.me).has("SEND_MESSAGES")
+        )
+        channel = channel;
+    });
+
+    if(!channel) return;
+
+    channel.send("Thanks for inviting me!");
+    channel.send('To initialize a conversation with me, say @LDnator#9779 hi\nTo continue the conversation, ping me every time you want to talk\nConversations will end after 5 minutes, after which you need to invoke hi again\nMore features will be coming soon!');
+    channel.send('To get a list of commands, say @LDnator#9779 help');
+
+})
+
 client.login(process.env.TOKEN);
