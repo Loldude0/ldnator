@@ -1,7 +1,22 @@
+const {EmbedBuilder} = require("discord.js");
+
 module.exports = {
     name: 'help',
     description: 'help',
     run: async (client, message, content, exists) => {
-        message.reply('To initialize a conversation with me, say @LDnator#9779 hi\nTo continue the conversation, ping me every time you want to talk\nConversations will end after 5 minutes, after which you need to invoke hi again\nMore features will be coming soon!');
+        const embed = new EmbedBuilder()
+            .setColor(0xcc0000)
+            .setTitle("commands")
+            .addFields(
+                {name : "hi", value : "Chat with Dialogpt"},
+                {name : "delete", value : "Stop chat with dialogpt"},
+                {name : "clear", value : "Clear chat with dialogpt"},
+                {name : "help", value : "Help"},
+                {name : "ping", value : "Ping"}
+            )
+            .setTimestamp(new Date());
+
+
+        message.reply({embeds: [embed]});
     }
 }

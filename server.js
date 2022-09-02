@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, ActivityType, EmbedBuilder } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 client.commands = new Collection();
 
@@ -18,6 +18,8 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+console.log("10:52:00 1/9/2022");
+
 inConversation = [];
 
 client.once('ready', () => {
@@ -27,6 +29,7 @@ client.once('ready', () => {
 
 client.on('messageCreate', async (message) => {
     if (message.author.id !== client.user.id && message.content.indexOf("<@972716081837932574>") > -1) {
+
         content = filter(message.content);
 
         author = message.author.username + "#" + message.author.discriminator;
@@ -38,16 +41,22 @@ client.on('messageCreate', async (message) => {
         if (command || exists) {
             if(exists == true){
                 try{
-                    await client.commands.get('hi').run(client, message, content, exists);
+                    if(content.indexOf("clear") > -1){
+                        await client.commands.get('clear').run(client, message, content, exists);
+                    } else if(content.indexOf("delete") > -1){
+                        await client.commands.get('delete').run(client, message, content, exists);
+                    } else {
+                        await client.commands.get('hi').run(client, message, content, exists);
+                    }
                 } catch {
-                    await message.channel.send(`Something went wrong on my side!`);
+                    await message.channel.send(`Somehow, my inner workings have grinded to a halt`);
                 }
             } else {
                 try {
                     await command.run(client, message, content, exists);
                 } catch (error) {
                     console.log(error);
-                    await message.channel.send(`Something went wrong on my side!`);
+                    await message.channel.send(`Somehow, my inner workings have grinded to a halt`);
                 }
             }
         }
@@ -67,9 +76,19 @@ client.on('guildCreate', (guild) => {
 
     if(!channel) return;
 
-    channel.send("Thanks for inviting me!");
-    channel.send('To initialize a conversation with me, say @LDnator#9779 hi\nTo continue the conversation, ping me every time you want to talk\nConversations will end after 5 minutes, after which you need to invoke hi again\nMore features will be coming soon!');
-    channel.send('To get a list of commands, say @LDnator#9779 help');
+    const embed = new EmbedBuilder()
+            .setColor(0xcc0000)
+            .setTitle("commands")
+            .addFields(
+                {name : "hi", value : "Chat with Dialogpt"},
+                {name : "delete", value : "Stop chat with dialogpt"},
+                {name : "clear", value : "Clear chat with dialogpt"},
+                {name : "help", value : "Help"},
+                {name : "ping", value : "Ping"}
+            )
+            .setTimestamp(new Date());
+    
+    channel.send({embeds: [embed]});
 
 })
 
